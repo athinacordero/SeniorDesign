@@ -17,9 +17,10 @@ def main():
     with open(sys.argv[1]) as f:
         data = json.load(f)
 
-    for x in range(0, len(f['data'])):
-        tok = nltk.word_tokenize(data.get('data')[x].get('data').get('selftext'))
-        post_dict[data.get('data')[x].get('data').get('title')] = nltk.pos_tag(tok)
+    for x in range(0, len(data['data'])):
+        if 'selftext' in data['data'][x]:
+            tok = nltk.word_tokenize(data.get('data')[x].get('selftext'))
+            post_dict[data.get('data')[x].get('title')] = nltk.pos_tag(tok)
 
 # list all parts of speech, and count instances of each
 
