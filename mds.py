@@ -53,7 +53,11 @@ def main():
     # a sequence of (*line0*, *line1*, *line2*), where::
     #            linen = (x0, y0), (x1, y1), ... (xm, ym)
     segments = [[X_transformed[i, :], X_transformed[j, :]]
+<<<<<<< HEAD
                 for i in range(len(pos)) for j in range(len(X_transformed))]
+=======
+                for i in range(len(X_transformed)) for j in range(len(X_transformed))]
+>>>>>>> 8e09353602844885d3566c269e9cd836885e2b74
     values = numpy.abs(vec)
     lc = LineCollection(segments,
                         zorder=0, cmap=plt.cm.Blues,
