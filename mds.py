@@ -41,7 +41,7 @@ def main():
 # begin MDS plotting
 
     embedding = MDS(n_components=35)
-    X_transformed = embedding(vec)
+    X_transformed = embedding.fit_transform(vec)
     X_transformed.shape
 
     ax = plt.axes([0., 0., 1., 1.])
