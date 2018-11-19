@@ -14,12 +14,14 @@ def get_pos_counts_for_subreddit(subreddit="depression"):
         data = json.load(f)
 
     print("Loading data for subreddit " + subreddit)
-    for x in range(0, 100):
+    for x in range(0, len(data['data'])):
+        if x % 100 == 0:
+            print(x)
         if 'selftext' in data['data'][x]:
             tok = nltk.word_tokenize(data.get('data')[x].get('selftext'))
             post_dict[data.get('data')[x].get('title')] = nltk.pos_tag(tok)
 
-# list all parts of speech, and count instances of each
+    # list all parts of speech, and count instances of each
 
     pos = post_dict.values()
     counts = dict()
@@ -37,24 +39,28 @@ def get_pos_counts_for_subreddit(subreddit="depression"):
 
 def main():
 
-    vec = []
-
-# Get pos counts for each subreddit
+    # Get pos counts for each subreddit
     subreddits = ['depression', 'Anxiety', 'foreveralone', 'socialanxiety', 'SuicideWatch', 
                     'berkeley', 'PowerLedger', 'TalesFromYourServer', 'tifu']
 
     totalCounts = []
     for subreddit in subreddits:
         counts = get_pos_counts_for_subreddit(subreddit=subreddit)
-        totalCounts.append(list(counts.values()))
+        countsArray = []
+        for pos in counts:
+            countsArray.append(counts[pos])
+        totalCounts.append(countsArray)
 
-    print(totalCounts)
-    print("------")
+    # Assure each subreddit is an array of the same size
+    vec = []
+    longest_row_len = max(len(row) for row in totalCounts)
 
-# append part of speech counts to empty array
+    for row in totalCounts:
+        row = np.append(np.array(row), np.zeros(longest_row_len-len(row)))
+        vec = np.append(vec, row)
 
-    # vec.extend(counts.values())
-    vec = np.asarray(totalCounts)
+    # Reshape array to be 2D array
+    vec = np.reshape(vec, (len(subreddits), int(vec.shape[0]/len(subreddits))))
 
 # begin MDS plotting
 
@@ -66,8 +72,12 @@ def main():
     # ax = plt.axes([0., 0., 1., 1.])
 
     s = 100
-    plt.scatter(X_transformed[:, 0], X_transformed[:, 1], color='navy', s=s, lw=0,
-                label='Depression')
+    # plt.scatter(X_transformed[:, 0], X_transformed[:, 1], color='navy', s=s, lw=0)
+
+    fix, ax = plt.subplots()
+    ax.scatter(vec[:, 0], vec[:, 1])
+    for i, subreddit in enumerate(subreddits):
+        ax.annotate(subreddit, (vec[i][0], vec[i][1]))
 
     # a sequence of (*line0*, *line1*, *line2*), where::
     #            linen = (x0, y0), (x1, y1), ... (xm, ym)
